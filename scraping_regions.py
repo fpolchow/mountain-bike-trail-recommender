@@ -4,6 +4,7 @@ import csv
 import math
 from sys import argv
 import pdb
+import re
 """
 -------------------------------------------------
 
@@ -29,11 +30,17 @@ def get_region_names(country):
 def scrape_all_regions(link):
     r = requests.get(link)
     soup = BeautifulSoup(r.content, "lxml")
-    items = soup.find_all('a',{"class": "regionLink")
+    # items = soup.find_all('a',{"class": "regionLink")
     mega_regions = soup.findAll('a',{"class": "regionLink","data-rid":["country_3001","country_3000"]})
     all_links = []
-    for item in all_links:
+    for item in mega_regions:
         all_links.extend(get_region_names(item))
+
+    with open('./data/regions/regions.csv','w') as f:
+        wrtr = csv.writer(f)
+        for region in all_links:
+            wrtr.writerow([region])
+
     return all_links
 
 
@@ -70,9 +77,9 @@ def scrape_region(region):
 def write_to_csvs(region):
     trails = scrape_region(region)
     # name = re.findall('\w+/+$',region)[0][:-1]
-    name = re.findall('(\w+-)*\w+/+$',region)[0][:-1]
-
-    with open(name + '_trails.csv','w') as f:
+    name = re.findall('((\w+-)*\w+\/+)$',region)[0][0][:-1]
+    # pdb.set_trace()
+    with open('./data/regions' + name + '_trails.csv','w') as f:
         wrtr = csv.writer(f)
         for trail in trails:
             wrtr.writerow([trail])
@@ -82,23 +89,23 @@ def write_to_csvs(region):
 
 def main():
 
-    regions = scrape_all_regions(argv[1])
+    regions = scrape_all_regions('https://www.trailforks.com/trails/')
     print(regions)
-    # with open('regions.csv','w') as f:
-    #     write = csv.writer(f)
-    #     for reg in regions:
-    #         write.writerow([reg])
+    with open('regions.csv','w') as f:
+        write = csv.writer(f)
+        for reg in regions:
+            write.writerow([reg])
 
-    # with open('regions.csv','r') as f:
-    #     regions = [reg.strip() for reg in f]
+    with open('regions.csv','r') as f:
+        regions = [reg.strip() for reg in f]
 
     for reg in regions:
         write_to_csvs(reg)
 
 
-if __name__ == "__main__":
-    main()
-
+# if __name__ == "__main__":
+#     main()
+#
 
 
 #

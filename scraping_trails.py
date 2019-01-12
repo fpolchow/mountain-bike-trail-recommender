@@ -4,7 +4,8 @@ import requests
 import math
 import re
 import csv
-import pandas as pd
+import pandas as pymongo
+import
 
 def make_soup(url):
     r = requests.get(url)
