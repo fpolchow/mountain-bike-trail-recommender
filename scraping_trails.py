@@ -11,6 +11,7 @@ def make_soup(url):
     return BeautifulSoup(r.content,'lxml')
 
 def get_trail_stats_box(url):
+
     stats_url = url + 'stats/'
     soup = make_soup(stats_url)
     trail_stats = soup.find('ul',{'id':'trailstats_display'})
@@ -19,11 +20,15 @@ def get_trail_stats_box(url):
 def extract_trail_details_stats(trail_stats):
     trail_details = {}
     if trail_stats:
+        ## have to do -1 indexing to account for section that you don't want
+
         list_items = trail_stats.findChildren('li')
-        for item in list_items:
-            term = item.find(class_='term').text.strip()
-            definition = item.find(class_='definition').text.strip()
-            trail_details[term]=definition
+        for idx,item in enumerate(list_items):
+            print(idx, item)
+            if item.find(class_='term'):
+                term = item.find(class_='term').text.strip()
+                definition = item.find(class_='definition').text.strip()
+                trail_details[term]=definition
 
     return trail_details
 
@@ -74,12 +79,14 @@ def scrape_user_info(url):
 
 def trail_info_maker(trail_url):
     """ type_info : either '' for basic trail, 'stats/ for' """
+    print('--------------------------------')
+    print(trail_url)
+    print('--------------------------------')
     trail_info_dict = {}
     soup = make_soup(trail_url)
 
     trail_info_dict['url'] = trail_url
     trail_info_dict['latlng'] = find_gps_coords(soup)
-    print()
     trail_info_dict['description'] = find_description(soup)
     trail_info_dict['trail_id'] = find_trail_id(soup)
     trail_info_dict['logs'] = scrape_user_info(trail_url)
@@ -89,27 +96,29 @@ def trail_info_maker(trail_url):
     trail_statistics = extract_trail_details_stats(trail_stats_page)
     trail_info_dict.update(trail_details)
     trail_info_dict.update(trail_statistics)
+    print(trail_info_dict)
     return trail_info_dict
 
 def main_trail_scraper(trails):
     with open('test.csv','w') as f:
         fieldnames = ['url', 'latlng', 'description', 'trail_id', 'logs',
-         'Riding area', 'Difficulty rating', 'Trail type', 'Trail Usage',
-          'Direction', 'Climb Difficulty', 'Physical rating', 'Global Ranking',
+         'Riding Area', 'Difficulty Rating', 'Trail Type', 'Trail Usage',
+          'Direction', 'Climb Difficulty', 'Physical Rating', 'Global Ranking',
            'Land Manager', 'Distance', 'Altitude change', 'Altitude min',
             'Altitude max', 'Altitude start', 'Altitude end', 'Grade',
              'Grade max', 'Grade min', 'Vertical climb', 'Vertical descent',
-              'Distance climb', 'Distance descent', 'Distance flat','Bike type',
-               'Avg time', 'eBike Allowed', 'TTFs on trail','Avg reverse time',
+              'Distance climb', 'Distance descent', 'Distance Flat','Bike Type',
+               'Avg time', 'eBike Allowed', 'TTFs on Trail','Avg reverse time',
                'Season','AKA','Alpine Trail','Family Friendly','Year Opened',
-               'Ride in rain','Voted Difficulty','OSM Way']
+               'Ride in Rain','Voted Difficulty','OSM Way', 'Local Popularity','Distance flat',
+               'Distance down']
         writer = csv.DictWriter(f,fieldnames=fieldnames)
         writer.writeheader()
         for trail in trails:
             writer.writerow(trail_info_maker(trail))
             print('just scraped {}'.format(trail))
 
-df = pd.read_csv('./data/trails_lists/_trails.csv',header=None)
+df = pd.read_csv('./data/trails_lists/carolina_trails.csv',header=None)
 cal_trails = df[0]
 
 if __name__ == "__main__":
