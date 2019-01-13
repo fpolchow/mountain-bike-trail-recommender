@@ -25,7 +25,7 @@ def extract_trail_details_stats(trail_stats):
 
         list_items = trail_stats.findChildren('li')
         for idx,item in enumerate(list_items):
-            print(idx, item)
+            # print(idx, item)
             if item.find(class_='term'):
                 term = item.find(class_='term').text.strip()
                 definition = item.find(class_='definition').text.strip()
