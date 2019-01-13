@@ -14,11 +14,6 @@ url to use is: https://www.trailforks.com/regions/directory/?r=usa
 
 
 
-
-
-
-
-
 -------------------------------------------------
 """
 
@@ -79,7 +74,7 @@ def write_to_csvs(region):
     # name = re.findall('\w+/+$',region)[0][:-1]
     name = re.findall('((\w+-)*\w+\/+)$',region)[0][0][:-1]
     # pdb.set_trace()
-    with open('./data/regions' + name + '_trails.csv','w') as f:
+    with open('../data/regions' + name + '_trails.csv','w') as f:
         wrtr = csv.writer(f)
         for trail in trails:
             wrtr.writerow([trail])
@@ -90,45 +85,14 @@ def write_to_csvs(region):
 def main():
 
     regions = scrape_all_regions('https://www.trailforks.com/trails/')
-    print(regions)
-    with open('regions.csv','w') as f:
+
+    with open('../data/regions.csv','w') as f:
         write = csv.writer(f)
         for reg in regions:
             write.writerow([reg])
 
-    with open('regions.csv','r') as f:
+    with open('../data/regions.csv','r') as f:
         regions = [reg.strip() for reg in f]
 
     for reg in regions:
         write_to_csvs(reg)
-
-
-# if __name__ == "__main__":
-#     main()
-#
-
-
-#
-# def trail_info_maker(trail_box):
-#     trail_info_dict = {}
-#      for item in box:
-#          term = item.find(class_='term').text.strip()
-#          definition = item.find(class_='definition').text.strip()
-#          trail_info_dict[term]=definition
-#      return trail_info_dict
-#
-#
-# trail_info_dict = {}
-#
-# trails_stats_1 = trail_info_maker(url,trail_info_dict)
-# trail_stats_2 = trail_info_maker(url2,trail_info_dict)
-# find_number_of_trail_pages(url)
-#
-#
-# def scrape_user_info(url):
-#     num_pages = find_number_of_trail_pages(url)
-#     user_list = []
-#     for i in num_pages:
-#         user_profile_urls = soup.find_all(href=re.compile('profile'))
-#         user_list.extend([user.text for user in user_profile_urls])
-#     return Counter(user_list)

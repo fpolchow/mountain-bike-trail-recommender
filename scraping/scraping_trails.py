@@ -5,7 +5,7 @@ import math
 import re
 import csv
 import pandas as pymongo
-import
+
 
 def make_soup(url):
     r = requests.get(url)
@@ -80,12 +80,11 @@ def scrape_user_info(url):
 
 def trail_info_maker(trail_url):
     """ type_info : either '' for basic trail, 'stats/ for' """
-    print('--------------------------------')
-    print(trail_url)
-    print('--------------------------------')
+    # print('--------------------------------')
+    # print(trail_url)
+    # print('--------------------------------')
     trail_info_dict = {}
     soup = make_soup(trail_url)
-
     trail_info_dict['url'] = trail_url
     trail_info_dict['latlng'] = find_gps_coords(soup)
     trail_info_dict['description'] = find_description(soup)
@@ -97,7 +96,7 @@ def trail_info_maker(trail_url):
     trail_statistics = extract_trail_details_stats(trail_stats_page)
     trail_info_dict.update(trail_details)
     trail_info_dict.update(trail_statistics)
-    print(trail_info_dict)
+    # print(trail_info_dict)
     return trail_info_dict
 
 def main_trail_scraper(trails):
@@ -118,9 +117,3 @@ def main_trail_scraper(trails):
         for trail in trails:
             writer.writerow(trail_info_maker(trail))
             print('just scraped {}'.format(trail))
-
-df = pd.read_csv('./data/trails_lists/carolina_trails.csv',header=None)
-cal_trails = df[0]
-
-if __name__ == "__main__":
-    main_trail_scraper(cal_trails)
